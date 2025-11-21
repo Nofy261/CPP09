@@ -1,0 +1,138 @@
+
+🗄️ 2. Fonctionnement général du programme
+
+Le programme doit prendre un seul argument, qui est un fichier texte d'entrée.
+
+Si aucun fichier n’est passé en argument, tu dois afficher une erreur.
+
+Si le fichier ne peut pas être ouvert, tu dois afficher :
+→ "Error: could not open file."
+
+📝 9. Attentes implicites
+
+Lire et parser correctement un CSV.
+
+Lire et parser correctement un fichier ligne par ligne.
+
+Extraire la date et la valeur en validant soigneusement les formats.
+
+Convertir correctement les strings en nombres (flottants).
+
+Utiliser un conteneur ordonné pour retrouver la date inférieure la plus proche.
+
+Vérifier toutes les erreurs de format avant de faire un calcul.
+
+Afficher exactement le format du sujet (espaces inclus).
+
+Gérer les cas limites :
+
+plusieurs lignes identiques
+valeurs très grandes
+dates erronées
+lignes vides
+lignes avec espaces supplémentaires
+
+---------------------------------------------------------------------------------------------
+
+Afficher la valeur de X quantite de bitcoin a X date.
+
+Il y a une base de donnees (format csv) qui represente le prix du btc au fil du temps.
+
+Le programme prend un seul arg d'entree qui est un fichier.txt ---> ./btc file.txt
+--> si aucun fichier en arg = affiche message d erreur
+--> si fichier n'a pu etre ouvert = "Error: could not open file."
+
+-Dans le file.txt je mets date | value soit Year-Month-Day | value 
+
+Pour chaque ligne du fichier file.txt :
+✔ lire la date et la valeur
+✔ chercher le prix du bitcoin ce jour-là dans data.csv
+✔ faire le calcul
+✔ afficher le résultat dans le terminal
+
+1- Chaque ligne doit avoir le format :
+
+"date | value"
+La date doit être au format YYYY-MM-DD.
+La valeur doit être :
+un entier positif ou un flottant positif,
+
+compris entre 0 et 1000 inclus.
+ : parsing (annee-mois-jour) - bon format
+format attendu :
+***YYYY-MM-DD | value <-- l'annee en 4 chiffres et le mois et le jour en 2chiffres.
+ ex non valide : 2011/01/03 --> valide : 2011-01-03
+ ex non valide : 2011-01-03| 45 <-- il faut un espace avant et apres le pipe | 
+***value entre 0 et 1000 inclus et peut etre un nombre a virgule (float)
+ex ligne invalide : 
+2012-01-11 | -1              → Error: not a positive number.
+2001-42-42 		     → Error: bad input => 2001-42-42
+2012-01-11 | 2147483648      → Error: too large a number.
+abc             → Error: bad input
+1.2.3           → Error: bad input
+Error: could not open file.
+
+Date invalide de Fevrier : (ex. pas 2011-02-30)
+Annee correct doit etre composé de 4 chiffres et > 0. (0001 est accepte et considere comme 1)
+
+Le separateur du float est un point et non une virgule.
+
+2- 
+
+Le CSV = base de données fixe.
+
+-Ouvrir le data.csv donné dans le sujet.
+--> si echec d'ouverture afficher erreur et fermer le programme.
+
+-Sinon Lire le csv ligne par ligne 
+ligne = date,prix soit 2011-01-03,0.3
+--> Il faut parser chaque ligne en separant la date du prix(virgule est separateur ici)
+--> convertir le prix 0.3 en float 
+--> stocker chaque ligne dans un conteneur jusqu a ce qu'on ait toutes les donnees dans csv.
+
+C’est ce conteneur qui servira à chercher les prix pour le fichier d’entrée.
+
+3 - Faire le calcul (parsind du fichier d 'entree ici , voir etape 1)
+
+-lire la ligne dans le fichier d'entree : 2012-01-11 | 1
+--> "2012-01-11 | 1" consideré comme un string pour le moment ,verifier si c'est au bon format 
+sinon message d'erreur et on passe a la ligne suivante.
+--> separer en deux : date et value (date = "2012-01-11" et value "1" )
+--> verifier la date 2012-01-11 puis la parser et message d'erreur si probleme
+--> verifier la value et parser , si erreur on affiche un message .
+-Si tout est valide 
+--> chercher la date dans le conteneur : 
+   --> si date inexisant on prend la date precedente la plus proche 
+   --> on fait le calcul result = prix dans le conteneur * value du fichier d'entree.
+- Affichage du resultat : YYYY-MM-DD => value = result (2011-01-09 => 1 = 0.32)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
