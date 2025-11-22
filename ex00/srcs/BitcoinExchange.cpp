@@ -10,3 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "BitcoinExchange.hpp"
+
+
+
+
+
+int loadCsv(const std::string &csvFile)
+{
+    // ouvrir le fihcier csv
+    std::ifstream file(csvFile.c_str());
+    if (!file.is_open())
+        throw std::runtime_error("Error: could not open file");
+    // on recupere ou on ignore la premiere ligne
+
+
+
+    file.close();
+}
