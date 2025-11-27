@@ -6,7 +6,7 @@
 /*   By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 17:23:05 by nolecler          #+#    #+#             */
-/*   Updated: 2025/10/18 17:23:06 by nolecler         ###   ########.fr       */
+/*   Updated: 2025/11/27 11:02:19 by nolecler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ class BitcoinExchange
 
         //fct pour charger la csv
         //fct de parsing : parse le fichier d'entree
-        int loadCsv(const std::string &csvFile);
+        void trim(std::string &str);
+        void loadCsv(const std::string &csvFile);
         // ouvrir le fichier : error si pb
         // parser la premiere ligne 
         //
@@ -33,4 +34,4 @@ class BitcoinExchange
 
     private :
         std::map<std::string, double> _btcData;
-}
+};
