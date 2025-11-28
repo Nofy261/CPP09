@@ -31,6 +31,20 @@ BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &other)
     
 BitcoinExchange::~BitcoinExchange(){};
 
+
+static double stringToDouble(const std::string& str)
+{
+    std::stringstream ss(str);
+    double value;
+    ss >> value; 
+
+    if (ss.fail() || !ss.eof())
+        throw std::runtime_error("Invalid double format: " + str);
+    return value;
+}
+
+
+
 void BitcoinExchange::trim(std::string &str)
 {
     std::string::size_type start = str.find_first_not_of(" \t\n\r\f\v"); // cherche le premier caractere qui n'est pas un espace ...
@@ -45,7 +59,8 @@ void BitcoinExchange::trim(std::string &str)
     std::string::size_type end = str.find_last_not_of(" \t\n\r\f\v");
     if (end == std::string::npos)
 		str.clear();
-    else str.erase(end + 1);
+    else 
+        str.erase(end + 1);
 }
 
 void BitcoinExchange::loadCsv(const std::string &csvFile)
@@ -53,7 +68,7 @@ void BitcoinExchange::loadCsv(const std::string &csvFile)
     std::string line;
     std::string date;
     std::string rateStr;
-    float rate; //taux
+    double rateValue; //taux
     // ouvrir le fihcier csv
     std::ifstream file(csvFile.c_str());
     if (!file.is_open())
@@ -73,10 +88,11 @@ void BitcoinExchange::loadCsv(const std::string &csvFile)
         }
         trim(date);
         trim(rateStr);
-        // convertir rateStr en float ou double ?
-        // mettre la ligne dans la map
+        // convertir rateStr en double ?
+        rateValue = stringToDouble(rateStr);
+        // mettre la ligne dans la map cad _btcData["2025-01-01"] = 46850.23f;
+        _btcData[date] = rateValue;
     }
-
     file.close();
 }
 
