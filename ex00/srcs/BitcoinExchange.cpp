@@ -63,6 +63,53 @@ void BitcoinExchange::trim(std::string &str)
         str.erase(end + 1);
 }
 
+static bool isNumber(const std::string &str) //pour les verif de date
+{
+    for (size_t i = 0; i < str.size(), i++)
+    {
+        if (!std::isdigit(str[i]))
+            return false;
+    }
+    return true;
+}
+
+//2009-01-02,0  <-- .csv
+//2023-06-01 | 2.5  <-- file,txt
+//2009-01-02
+bool BitcoinExchange::IsValidDate(const std::string &date)
+{
+    if (date.size() != 10)
+        return false;
+    if (date[4] != '-' && date[7] != '-')
+        return false;
+    // on decoupe l annee 
+    // substr(index de ce qu'on veut prendre, le nombre de caracatere a prendre a partir de cet index)
+    std::string yearStr = date.substr(0, 4);
+    std::string monthStr = date.substr(5, 2);
+    std::string dayStr = date.substr(8, 2);
+
+    if (!isNumber(yearStr) || !isNumber(monthStr) || !isNumber(dayStr))
+        return false;
+
+    int year = std::atoi(yearStr.c_str());
+    int month = std::atoi(monthStr.c_str());
+    int day = std::atoi(dayStr.c_str());
+
+    if (month < 1 || month > 12)
+        return false;
+    
+    int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    // Si znnée bissextile 
+    if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
+        daysInMonth[1] = 29;
+
+    if (day < 1 || day > daysInMonth[month - 1]) // month - 1 = index du mois Ex : janvier = index 0 car (1 - 1)
+        return false;
+
+    return true;
+}
+
 void BitcoinExchange::loadCsv(const std::string &csvFile)
 {
     std::string line;
@@ -83,17 +130,29 @@ void BitcoinExchange::loadCsv(const std::string &csvFile)
         std::istringstream ss(line); //rendre line lisible avec getline
         if ((!std::getline(ss, date, ',')) || (!std::getline(ss, rateStr)))
         {
-            std::cerr << "Error: Invalid line format => " << line << std::endl;
+            std::cerr << "Error: Invalid CSV line format => " << line << std::endl;
             continue;
         }
         trim(date);
         trim(rateStr);
+        // parser la date IsvalidateDate()?? 
+        if (!IsvalidateDate(date))
+        {
+            std::cerr << "Error: invalid date in CSV => " << date << std::endl;
+            continue; // on ignore la ligne
+        }
         // convertir rateStr en double ?
-        rateValue = stringToDouble(rateStr);
+        try
+        {
+            rateValue = stringToDouble(rateStr);
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Error: invalid rate in CSV => " << rateStr << std::endl;
+            continue;
+        }
         // mettre la ligne dans la map cad _btcData["2025-01-01"] = 46850.23f;
         _btcData[date] = rateValue;
     }
     file.close();
 }
-
-

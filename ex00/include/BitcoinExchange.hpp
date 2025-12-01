@@ -26,6 +26,7 @@ class BitcoinExchange
         //fct pour charger la csv
         //fct de parsing : parse le fichier d'entree
         void trim(std::string &str);
+        bool IsValidDate(const std::string &date);
         void loadCsv(const std::string &csvFile);
         // ouvrir le fichier : error si pb
         // parser la premiere ligne 
