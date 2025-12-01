@@ -43,8 +43,6 @@ static double stringToDouble(const std::string& str)
     return value;
 }
 
-
-
 void BitcoinExchange::trim(std::string &str)
 {
     std::string::size_type start = str.find_first_not_of(" \t\n\r\f\v"); // cherche le premier caractere qui n'est pas un espace ...
@@ -63,9 +61,9 @@ void BitcoinExchange::trim(std::string &str)
         str.erase(end + 1);
 }
 
-static bool isNumber(const std::string &str) //pour les verif de date
+static bool isNumber(const std::string &str)
 {
-    for (size_t i = 0; i < str.size(), i++)
+    for (size_t i = 0; i < str.size(); i++)
     {
         if (!std::isdigit(str[i]))
             return false;
@@ -110,6 +108,7 @@ bool BitcoinExchange::IsValidDate(const std::string &date)
     return true;
 }
 
+
 void BitcoinExchange::loadCsv(const std::string &csvFile)
 {
     std::string line;
@@ -136,7 +135,7 @@ void BitcoinExchange::loadCsv(const std::string &csvFile)
         trim(date);
         trim(rateStr);
         // parser la date IsvalidateDate()?? 
-        if (!IsvalidateDate(date))
+        if (!IsValidDate(date))
         {
             std::cerr << "Error: invalid date in CSV => " << date << std::endl;
             continue; // on ignore la ligne
@@ -155,4 +154,95 @@ void BitcoinExchange::loadCsv(const std::string &csvFile)
         _btcData[date] = rateValue;
     }
     file.close();
+    
+    // afficher map pour test
+    // std::map<std::string, double>::const_iterator it = _btcData.begin();
+    // for (; it != _btcData.end(); ++it)
+    // {
+    //     std::cout << it->first << " : " << it->second << std::endl;
+    // }
 }
+
+
+// preciser la position du pipe
+bool isPipe(const std::string &str) // verifie qu il y a un seul pipe
+{
+    int countp = 0;
+    for (size_t i = 0; i < str.size(); i++)
+    {
+        if (str[i] == '|')
+            countp++;
+    }
+    if (countp != 1)
+        return false;
+    
+    return true;
+}
+
+// line = "2009-01-02 | 2.5"
+
+// bool checkPipePosition(const std::string &str)
+// {
+//     if (str.size() < 14)
+//         return false;
+//     if (isPipe(str) && str[11] != '|') // s il y a un pipe mais au mauvais endroit
+//         return false;
+//     return true;
+// }
+
+
+
+//date | value
+void BitcoinExchange::execute(const std::string &argvFile)
+{
+    std::string line;
+    std::string date;
+    std::string rate;
+
+    std::ifstream file(argvFile.c_str());
+    if (!file.is_open())
+        throw std::runtime_error("Error: could not open file");
+    std::getline(file, line);
+    while (std::getline(file, line))
+    {
+        if (line.empty())
+            continue;
+        if (line == "date | value")
+            continue;
+    // je recup a partir de la deuxieme ligne
+    // line = "2009-01-02 | 2.5"
+        trim(line); // enleve espace du debut et de fin
+        if (!isPipe(line)) // si pas de pipe 
+        {
+            std::cerr << "Error: bad input => " << line << std::endl;
+            continue;
+        }
+        size_t pipeIndex = line.find('|'); // soit 11
+        if (pipeIndex != 11 || line[pipeIndex - 1] != ' ' || line[pipeIndex + 1] != ' ')
+        {
+            std::cerr << "Error: bad input => " << line << std::endl;
+            continue;
+        }
+
+
+        std::istringstream iss(line);
+        if (!std::getline(iss, date, '|') || !std::getline(iss, rate)) 
+        {
+            std::cerr << "Error: bad input => " << line << std::endl;
+            continue;
+        }
+
+
+
+     
+
+
+
+
+    
+
+    }
+
+}
+
+

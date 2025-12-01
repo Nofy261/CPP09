@@ -28,6 +28,7 @@ class BitcoinExchange
         void trim(std::string &str);
         bool IsValidDate(const std::string &date);
         void loadCsv(const std::string &csvFile);
+        void execute(const std::string &argvFile);
         // ouvrir le fichier : error si pb
         // parser la premiere ligne 
         //

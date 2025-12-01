@@ -16,7 +16,8 @@ CC = c++
 
 CFLAGS = -Wall -Werror -Wextra -Iinclude -std=c++98
 
-SRC :=	srcs/main.cpp
+SRC :=	srcs/main.cpp \
+		srcs/BitcoinExchange.cpp
 
 OBJ := $(SRC:.cpp=.o)
 
