@@ -24,7 +24,7 @@ int main(int argc, char **argv)
     try
     {
         btc.loadCsv("data.csv");
-        //
+        btc.execute(argv[1]);
     }
     catch(const std::exception& e)
     {
