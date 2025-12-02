@@ -185,8 +185,8 @@ void BitcoinExchange::loadCsv(const std::string &csvFile)
     std::string date;
     std::string rateStr;
     double rateValue; //taux
-    // ouvrir le fihcier csv
-    std::ifstream file(csvFile.c_str());
+    
+    std::ifstream file(csvFile.c_str()); // ouvrir le fihcier csv
     if (!file.is_open())
         throw std::runtime_error("Error: could not open file");
         
@@ -255,19 +255,19 @@ void BitcoinExchange::execute(const std::string &argvFile)
         trim(line); // enleve espace du debut et de fin
         if (!isPipe(line) || line.size() < 14) // si pas de pipe 
         {
-            std::cerr << "Error: bad input => " << line << std::endl;
+            std::cerr << "Error: bad input 3=> " << line << std::endl;
             continue;
         }
         size_t pipeIndex = line.find('|'); // soit 11
         if (pipeIndex != 11 || line[pipeIndex - 1] != ' ' || line[pipeIndex + 1] != ' ')
         {
-            std::cerr << "Error: bad input => " << line << std::endl;
+            std::cerr << "Error: bad input 2 => " << line << std::endl;
             continue;
         }
         std::istringstream iss(line);
         if (!std::getline(iss, date, '|') || !std::getline(iss, rate)) 
         {
-            std::cerr << "Error: bad input => " << line << std::endl;
+            std::cerr << "Error: bad input 1 => " << line << std::endl;
             continue;
         }
         trim(date);
