@@ -13,7 +13,25 @@
 
 #include "PmergeMe.hpp"
 
-int main()
+int main(int argc, char **argv)
 {
+    if (argc < 2)
+    {
+        std::cerr << "Error" << std::endl;
+        return (1);
+    }
 
+    PmergeMe pmm;
+    try
+    {
+        pmm.parse();
+        pmm.sort();
+        pmm.print();
+    }
+    catch (const std::exception &e)
+    {
+
+    }
+
+    return (0);
 }

@@ -12,14 +12,24 @@
 
 
 #pragma once
-
+#include <vector>
+#include <deque>
 
 class PmergeMe
 {
     public :
+        PmergeMe();
+        PmergeMe(const PmergeMe& copy);
+        PmergeMe &operator=(const PmergeMe& other);
+        ~PmergeMe();
+
+        void parseAndPush(int argc, char **argv);
 
 
 
     private :
+        std::vector<int> _vec;
+        std::deque<int> _deq;
+
 
 };
