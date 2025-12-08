@@ -24,13 +24,20 @@ int main(int argc, char **argv)
     PmergeMe pmm;
     try
     {
-        pmm.parse();
-        pmm.sort();
-        pmm.print();
+        pmm.parseAndPush(argc, argv);
+        pmm.printContainers();
+        pmm.makePairs();
+        pmm.extractMinsMaxs();
+        pmm._sortMinVec();
+        pmm._sortMinDeq();
+        pmm.displayResults();
+        pmm.displayTime();
+       
     }
     catch (const std::exception &e)
     {
-
+        std::cerr << e.what() << std::endl;
+        return (1);
     }
 
     return (0);

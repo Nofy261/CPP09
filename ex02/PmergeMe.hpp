@@ -14,6 +14,7 @@
 #pragma once
 #include <vector>
 #include <deque>
+#include <ctime>
 
 class PmergeMe
 {
@@ -24,12 +25,33 @@ class PmergeMe
         ~PmergeMe();
 
         void parseAndPush(int argc, char **argv);
+        void printContainers() const;
+        void makePairs();
+        void extractMinsMaxs();
+        void sortMinVec();
+        void sortMinDeq();
+        void displayResults() const;
+        void displayTime() const;
 
 
 
     private :
         std::vector<int> _vec;
         std::deque<int> _deq;
+        std::vector<std::pair<int,int> > _pairs;
+        int _last;
+        bool _oddList; 
 
+        std::vector<int> _minVec;
+        std::vector<int> _maxVec;
+        std::deque<int> _minDeq;
+        std::deque<int> _maxDeq;
 
+        clock_t _startVec;
+        clock_t _startDeq;
+        clock_t _endVec;
+        clock_t _endDeq;
+
+        double _timeVec;
+        double _timeDeq;
 };

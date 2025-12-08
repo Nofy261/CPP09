@@ -129,7 +129,7 @@ Etape 8 : Affichage du temps
 2) Stocker les valeurs dans vector et deque
 3) Former des paires (min,max)
 4) Extraire mins et maxs
-5) Trier mins
+5) Trier mins + penser a commencer le chrono
 6) Construire l’ordre Jacobsthal
 7) Insérer maxs dans mins selon l’ordre Jacobsthal (lower_bound)
 8) Si impair → insérer l’élément restant
@@ -142,3 +142,20 @@ parsing :
 - que des noombres Positif qui ne dpeasse pas le int max
 - ne se repete pas deux fois
 - au moins 2 argc et pas vide
+
+Rappel rapide de l’idée :
+La suite de Jacobsthal sert à décider quel élément du vecteur maxVec insérer en premier dans le vecteur trié minVec.
+
+Les indices de cette suite te donnent l’ordre d’insertion.
+
+Ensuite, pour chaque élément à insérer, tu utilises std::lower_bound pour trouver la bonne position dans le vecteur trié 
+et l’insérer à cet endroit.
+
+Étapes concrètes pour le faire :
+Construire la suite de Jacobsthal jusqu’à la taille de maxVec.
+La suite commence par : 0, 1, 3, 5, 11, 21, …
+Formule récursive : J(n) = J(n-1) + 2*J(n-2)
+Parcourir maxVec dans l’ordre donné par la suite de Jacobsthal.
+Pour chaque élément de maxVec :
+Trouver sa position dans le minVec trié avec std::lower_bound.
+L’insérer à cette position.
