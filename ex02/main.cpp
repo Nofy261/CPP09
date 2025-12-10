@@ -12,6 +12,8 @@
 
 
 #include "PmergeMe.hpp"
+// #include <stdexcept>
+#include <iostream>
 
 int main(int argc, char **argv)
 {
@@ -25,11 +27,11 @@ int main(int argc, char **argv)
     try
     {
         pmm.parseAndPush(argc, argv);
-        pmm.printContainers();
+        pmm.printContainers();//
         pmm.makePairs();
         pmm.extractMinsMaxs();
-        pmm._sortMinVec();
-        pmm._sortMinDeq();
+        pmm.sortMinVec();
+        pmm.sortMinDeq();
         pmm.displayResults();
         pmm.displayTime();
        
