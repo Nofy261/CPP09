@@ -6,17 +6,15 @@
 /*   By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/03 14:18:50 by nolecler          #+#    #+#             */
-/*   Updated: 2025/12/03 14:18:54 by nolecler         ###   ########.fr       */
+/*   Updated: 2025/12/11 15:38:06 by nolecler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #pragma once
 #include <vector>
 #include <deque>
 #include <ctime>
 #include <utility>
-
 
 class PmergeMe
 {
@@ -27,15 +25,13 @@ class PmergeMe
         ~PmergeMe();
 
         void parseAndPush(int argc, char **argv);
-        void printContainers() const;
+        void printBeforeSort() const;
         void makePairs();
         void extractMinsMaxs();
-        void sortMinVec();
-        void sortMinDeq();
-        void displayResults() const;
+        void sortMaxVec();
+        void sortMaxDeq();
+        void printAfterSort() const;
         void displayTime() const;
-
-
 
     private :
         std::vector<int> _vec;

@@ -6,13 +6,11 @@
 /*   By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/03 14:18:28 by nolecler          #+#    #+#             */
-/*   Updated: 2025/12/03 14:18:31 by nolecler         ###   ########.fr       */
+/*   Updated: 2025/12/11 14:33:06 by nolecler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "PmergeMe.hpp"
-// #include <stdexcept>
 #include <iostream>
 
 int main(int argc, char **argv)
@@ -22,25 +20,22 @@ int main(int argc, char **argv)
         std::cerr << "Error" << std::endl;
         return (1);
     }
-
     PmergeMe pmm;
     try
     {
         pmm.parseAndPush(argc, argv);
-        pmm.printContainers();//
+        pmm.printBeforeSort();
         pmm.makePairs();
         pmm.extractMinsMaxs();
-        pmm.sortMinVec();
-        pmm.sortMinDeq();
-        pmm.displayResults();
+        pmm.sortMaxVec();
+        pmm.sortMaxDeq();
+        pmm.printAfterSort();
         pmm.displayTime();
-       
     }
     catch (const std::exception &e)
     {
         std::cerr << e.what() << std::endl;
         return (1);
     }
-
     return (0);
 }
