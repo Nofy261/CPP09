@@ -19,7 +19,6 @@ int main(int argc, char **argv)
         std::cerr << "Error: could not open file." << std::endl;
 		return (1);
     }
-
     BitcoinExchange btc;
     try
     {
@@ -31,6 +30,5 @@ int main(int argc, char **argv)
         std::cerr << e.what() << std::endl;
         return (1);
     }
-
     return (0);
 }

@@ -77,6 +77,5 @@ int RPN::process(const std::string &str)
     }
     if (_stack.size() != 1)
         throw std::runtime_error("Error: Invalid RPN expression");
-        return _stack.top();
+    return _stack.top();
 }
-

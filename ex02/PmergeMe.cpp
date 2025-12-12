@@ -121,7 +121,7 @@ void PmergeMe::makePairs()
             _oddList = true;
         }
     }
-    for (size_t i = 0; i < _pairs.size(); i++)
+    for (size_t i = 0; i < _pairs.size(); i++)//a verif si necessaire
     {
         for (size_t j = i + 1; j < _pairs.size(); j++)
         {
@@ -228,7 +228,6 @@ void PmergeMe::sortMaxDeq()
             inserted[idx] = true;
         }
     }
-
     for (size_t idx = 0; idx < _minDeq.size(); ++idx)
     {
         if (!inserted[idx])

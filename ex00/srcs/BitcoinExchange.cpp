@@ -243,7 +243,7 @@ void BitcoinExchange::execute(const std::string &argvFile)
     std::ifstream file(argvFile.c_str());
     if (!file.is_open())
         throw std::runtime_error("Error: could not open file");
-    std::getline(file, line);
+    std::getline(file, line); // ??
     while (std::getline(file, line))
     {
         if (line.empty())
@@ -255,19 +255,19 @@ void BitcoinExchange::execute(const std::string &argvFile)
         trim(line); // enleve espace du debut et de fin
         if (!isPipe(line) || line.size() < 14) // si pas de pipe 
         {
-            std::cerr << "Error: bad input 3=> " << line << std::endl;
+            std::cerr << "Error: bad input => " << line << std::endl;
             continue;
         }
         size_t pipeIndex = line.find('|'); // soit 11
         if (pipeIndex != 11 || line[pipeIndex - 1] != ' ' || line[pipeIndex + 1] != ' ')
         {
-            std::cerr << "Error: bad input 2 => " << line << std::endl;
+            std::cerr << "Error: bad input => " << line << std::endl;
             continue;
         }
         std::istringstream iss(line);
         if (!std::getline(iss, date, '|') || !std::getline(iss, rate)) 
         {
-            std::cerr << "Error: bad input 1 => " << line << std::endl;
+            std::cerr << "Error: bad input => " << line << std::endl;
             continue;
         }
         trim(date);
@@ -284,9 +284,9 @@ void BitcoinExchange::execute(const std::string &argvFile)
         }
 
         std::map<std::string, double>::const_iterator it = _btcData.lower_bound(date);
-        if (it == _btcData.end() || it->first != date) 
+        if (it == _btcData.end() || it->first != date) //
         {
-            if (it == _btcData.begin()) 
+            if (it == _btcData.begin()) //
             {
                 std::cerr << "Error: Date not found in database => " << date << std::endl;
                 continue;
