@@ -6,7 +6,7 @@
 /*   By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/03 14:18:43 by nolecler          #+#    #+#             */
-/*   Updated: 2025/12/13 13:30:30 by nolecler         ###   ########.fr       */
+/*   Updated: 2025/12/13 13:32:23 by nolecler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,15 +191,6 @@ void PmergeMe::sortMaxVec()
 
 void PmergeMe::sortMaxDeq()
 {
-    for (size_t i = 0; i < _pairs.size(); ++i)
-    {
-        if (_pairs[i].first > _pairs[i].second)
-        {
-            int tmp = _pairs[i].first;
-            _pairs[i].first = _pairs[i].second;
-            _pairs[i].second = tmp;
-        }
-    }
     _maxDeq.clear();
     for (size_t i = 0; i < _pairs.size(); i++)
         _maxDeq.push_back(_pairs[i].second);
