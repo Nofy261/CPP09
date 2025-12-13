@@ -6,7 +6,7 @@
 /*   By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/03 14:18:43 by nolecler          #+#    #+#             */
-/*   Updated: 2025/12/13 13:32:23 by nolecler         ###   ########.fr       */
+/*   Updated: 2025/12/13 18:26:49 by nolecler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ void PmergeMe::sortMaxVec()
         _maxVec.push_back(_pairs[i].second);
     
     _startVec = clock();
-    std::sort(_maxVec.begin(), _maxVec.end());
+    std::sort(_maxVec.begin(), _maxVec.end()); // doit etre trier avec fordjohnson et pas sort
 
     std::vector<size_t> jacobIndices;
     if (_minVec.size() > 0) jacobIndices.push_back(0);
@@ -187,7 +187,6 @@ void PmergeMe::sortMaxVec()
     _endVec = clock();
     _timeVec = 1000000.0 * (_endVec - _startVec) / CLOCKS_PER_SEC;
 }
-
 
 void PmergeMe::sortMaxDeq()
 {

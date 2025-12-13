@@ -6,7 +6,7 @@
 #    By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/03 14:17:43 by nolecler          #+#    #+#              #
-#    Updated: 2025/12/03 14:18:19 by nolecler         ###   ########.fr        #
+#    Updated: 2025/12/13 09:31:52 by nolecler         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = RPN
 
 CC = c++
 
-CFLAGS = -Wall -Werror -Wextra -Iincludes -std=c++98
+CFLAGS = -Wall -Werror -Wextra -std=c++98
 
 SRC := 	RPN.cpp \
 		main.cpp

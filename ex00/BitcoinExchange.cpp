@@ -6,7 +6,7 @@
 /*   By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/18 17:22:58 by nolecler          #+#    #+#             */
-/*   Updated: 2025/11/27 11:02:06 by nolecler         ###   ########.fr       */
+/*   Updated: 2025/12/13 19:54:58 by nolecler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <fstream>
 #include <algorithm>
 #include <sstream>
+#include <set>
 
 BitcoinExchange::BitcoinExchange(){};
     
@@ -45,10 +46,10 @@ static double stringToDouble(const std::string& str)
 
 void BitcoinExchange::trim(std::string &str)
 {
-    std::string::size_type start = str.find_first_not_of(" \t\n\r\f\v"); // cherche le premier caractere qui n'est pas un espace ...
-    if (start == std::string::npos) // n'a pas trouve ce qu'on cherche (carcatere qui n est pas espace , tab etc...)
+    std::string::size_type start = str.find_first_not_of(" \t\n\r\f\v");
+    if (start == std::string::npos)
     {
-        str.clear(); // tout est espace ou tab etc... aucun carcatere alphabetique par exemple 
+        str.clear();
         return;
     }
     else
@@ -71,16 +72,13 @@ static bool isNumber(const std::string &str)
     return true;
 }
 
-//2009-01-02,0  <-- .csv
-//2023-06-01 | 2.5  <-- file,txt
 bool BitcoinExchange::IsValidDateCsv(const std::string &date)
 {
     if (date.size() != 10)
         return false;
     if (date[4] != '-' || date[7] != '-')
         return false;
-    // on decoupe l annee 
-    // substr(index de ce qu'on veut prendre, le nombre de caracatere a prendre a partir de cet index)
+
     std::string yearStr = date.substr(0, 4);
     std::string monthStr = date.substr(5, 2);
     std::string dayStr = date.substr(8, 2);
@@ -97,13 +95,11 @@ bool BitcoinExchange::IsValidDateCsv(const std::string &date)
     
     int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-    // Si znnée bissextile 
     if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
         daysInMonth[1] = 29;
 
-    if (day < 1 || day > daysInMonth[month - 1]) // month - 1 = index du mois Ex : janvier = index 0 car (1 - 1)
+    if (day < 1 || day > daysInMonth[month - 1])
         return false;
-
     return true;
 }
 
@@ -118,8 +114,8 @@ static bool IsValidDateMessage(const std::string &date)
     {
         std::cerr << "Error: Bad input => " << date << std::endl;
         return false;
-    } 
-    // substr(index de ce qu'on veut prendre, le nombre de caracatere a prendre a partir de cet index)
+    }
+
     std::string yearStr = date.substr(0, 4);
     std::string monthStr = date.substr(5, 2);
     std::string dayStr = date.substr(8, 2);
@@ -141,18 +137,16 @@ static bool IsValidDateMessage(const std::string &date)
     }
     int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-    // Si znnée bissextile 
     if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
         daysInMonth[1] = 29;
 
-    if (day < 1 || day > daysInMonth[month - 1]) // month - 1 = index du mois Ex : janvier = index 0 car (1 - 1)
+    if (day < 1 || day > daysInMonth[month - 1])
     {
         std::cerr << "Error: Bad input => " << date << std::endl;
         return false;
     }
     return true;
 }
-
 
 bool BitcoinExchange::IsValidRate(const std::string &rate)
 {
@@ -178,22 +172,28 @@ bool BitcoinExchange::IsValidRate(const std::string &rate)
     return true;
 }
 
-
 void BitcoinExchange::loadCsv(const std::string &csvFile)
 {
     std::string line;
     std::string date;
     std::string rateStr;
-    double rateValue; //taux
+    double rateValue;
     
-    std::ifstream file(csvFile.c_str()); // ouvrir le fihcier csv
+    std::ifstream file(csvFile.c_str());
     if (!file.is_open())
         throw std::runtime_error("Error: could not open file");
-        
-    std::getline(file, line); // on recupere la premiere ligne et on n'en fait rien(on ignore)
+    if (!std::getline(file, line))
+        throw std::runtime_error("Error: empty CSV file");
+    trim(line);
+    if (line.empty())
+        throw std::runtime_error("Error: empty header line");
+
+    std::string expectedHeader = "date,exchange_rate";
+    if (line != expectedHeader)
+        throw std::runtime_error("Error: incorrect header of CSV file");
     while (std::getline(file, line))
     {
-        std::istringstream ss(line); //rendre line lisible avec getline
+        std::istringstream ss(line);
         if ((!std::getline(ss, date, ',')) || (!std::getline(ss, rateStr)))
         {
             std::cerr << "Error: Invalid CSV line format => " << line << std::endl;
@@ -204,7 +204,7 @@ void BitcoinExchange::loadCsv(const std::string &csvFile)
         if (!IsValidDateCsv(date))
         {
             std::cerr << "Error: invalid date in CSV => " << date << std::endl;
-            continue; // on ignore la ligne
+            continue;
         }
         try
         {
@@ -215,13 +215,17 @@ void BitcoinExchange::loadCsv(const std::string &csvFile)
             std::cerr << "Error: invalid rate in CSV => " << rateStr << std::endl;
             continue;
         }
-        _btcData[date] = rateValue; // _btcData["2025-01-01"] = 46850.23f;
+        if (_btcData.find(date) != _btcData.end())
+        {
+            std::cerr << "Error: duplicate date in CSV => " << date << std::endl;
+            continue;
+        }
+        _btcData[date] = rateValue;
     }
     file.close();
 }
 
-
-static bool isPipe(const std::string &str) // verifie qu il y a un seul pipe
+static bool isPipe(const std::string &str)
 {
     int countp = 0;
     for (size_t i = 0; i < str.size(); i++)
@@ -239,31 +243,41 @@ void BitcoinExchange::execute(const std::string &argvFile)
     std::string line;
     std::string date;
     std::string rate;
+    
+    std::set<std::string> processedLines;
 
     std::ifstream file(argvFile.c_str());
     if (!file.is_open())
         throw std::runtime_error("Error: could not open file");
-    std::getline(file, line); // ??
+
+    if (!std::getline(file, line))
+        throw std::runtime_error("Error: empty input file");
+    trim(line);
+    if (line.empty())
+        throw std::runtime_error("Error: empty header line");
+
+    std::string expectedHeader = "date | value";
+    if (line != expectedHeader)
+        throw std::runtime_error("Error: incorrect header of input file");
+
     while (std::getline(file, line))
     {
         if (line.empty())
             continue;
-        if (line == "date | value")
-            continue;
-    // je recup a partir de la deuxieme ligne
-    // line = "2009-01-02 | 2.5"
-        trim(line); // enleve espace du debut et de fin
-        if (!isPipe(line) || line.size() < 14) // si pas de pipe 
+        trim(line);
+        if (!isPipe(line) || line.size() < 14)
         {
             std::cerr << "Error: bad input => " << line << std::endl;
             continue;
         }
-        size_t pipeIndex = line.find('|'); // soit 11
+
+        size_t pipeIndex = line.find('|');
         if (pipeIndex != 11 || line[pipeIndex - 1] != ' ' || line[pipeIndex + 1] != ' ')
         {
             std::cerr << "Error: bad input => " << line << std::endl;
             continue;
         }
+
         std::istringstream iss(line);
         if (!std::getline(iss, date, '|') || !std::getline(iss, rate)) 
         {
@@ -272,30 +286,31 @@ void BitcoinExchange::execute(const std::string &argvFile)
         }
         trim(date);
         trim(rate);
-        if (!IsValidDateMessage(date))
-            continue; // on ignore la ligne
-        if (!IsValidRate(rate))
+
+        if (!IsValidDateMessage(date) || !IsValidRate(rate))
             continue;
-        //  Convertir rate en double pour pouvoir faire le calcul
-        double rateValue;
+
+        double rateValue = stringToDouble(rate);
+
+        if (processedLines.find(line) != processedLines.end())
         {
-            std::stringstream ss(rate);
-            ss >> rateValue;
+            std::cerr << "Error: duplicate line => " << line << std::endl;
+            continue;
         }
+        processedLines.insert(line);
 
         std::map<std::string, double>::const_iterator it = _btcData.lower_bound(date);
-        if (it == _btcData.end() || it->first != date) //
+        if (it == _btcData.end() || it->first != date)
         {
-            if (it == _btcData.begin()) //
+            if (it == _btcData.begin())
             {
                 std::cerr << "Error: Date not found in database => " << date << std::endl;
                 continue;
             }
-            --it; // on prend la date precedente dispo
+            --it;
         }
         double btcPrice = it->second;
         double result = btcPrice * rateValue;
-        // affichage
         std::cout << date << " => " << rateValue << " = " << result << std::endl;
     }
     file.close();

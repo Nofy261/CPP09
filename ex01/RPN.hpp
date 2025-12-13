@@ -6,12 +6,13 @@
 /*   By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/03 14:18:01 by nolecler          #+#    #+#             */
-/*   Updated: 2025/12/03 14:18:09 by nolecler         ###   ########.fr       */
+/*   Updated: 2025/12/13 11:31:09 by nolecler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include <stack>
+#include <iostream>
 
 class RPN
 {

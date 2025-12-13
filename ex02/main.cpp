@@ -6,7 +6,7 @@
 /*   By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/03 14:18:28 by nolecler          #+#    #+#             */
-/*   Updated: 2025/12/11 15:56:11 by nolecler         ###   ########.fr       */
+/*   Updated: 2025/12/13 19:56:24 by nolecler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,3 +39,7 @@ int main(int argc, char **argv)
     }
     return (0);
 }
+
+// faire des pairs - extraire min et max - trier max avec fordjohnson - 
+// creer une fonction fordjohnson qui fait les etapes de fordjonhson
+

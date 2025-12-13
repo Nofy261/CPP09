@@ -6,7 +6,7 @@
 /*   By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/03 14:17:55 by nolecler          #+#    #+#             */
-/*   Updated: 2025/12/03 14:18:13 by nolecler         ###   ########.fr       */
+/*   Updated: 2025/12/13 11:32:54 by nolecler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int RPN::process(const std::string &str)
         else if (s == "+" || s == "-" || s == "*" || s == "/")
         {
             if (_stack.size() < 2)
-                throw std::runtime_error("Error: Not enough operands");
+                throw std::runtime_error("Error: Not enough or too much operands");
             int b = _stack.top();
             _stack.pop();
             int a = _stack.top();
