@@ -6,7 +6,7 @@
 /*   By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/03 14:18:43 by nolecler          #+#    #+#             */
-/*   Updated: 2025/12/11 15:37:02 by nolecler         ###   ########.fr       */
+/*   Updated: 2025/12/13 13:30:30 by nolecler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,18 +121,6 @@ void PmergeMe::makePairs()
             _oddList = true;
         }
     }
-    for (size_t i = 0; i < _pairs.size(); i++)//a verif si necessaire
-    {
-        for (size_t j = i + 1; j < _pairs.size(); j++)
-        {
-            if (_pairs[i].second > _pairs[j].second)
-            {
-                std::pair<int, int> tmp = _pairs[i];
-                _pairs[i] = _pairs[j];
-                _pairs[j] = tmp;
-            }
-        }
-    }
 }
 
 void PmergeMe::extractMinsMaxs()
@@ -150,13 +138,16 @@ void PmergeMe::extractMinsMaxs()
         _minVec.push_back(_last);
         _minDeq.push_back(_last);
     }
-    std::sort(_maxVec.begin(), _maxVec.end());
-    std::sort(_maxDeq.begin(), _maxDeq.end());
 }
 
 void PmergeMe::sortMaxVec()
 {
+    _maxVec.clear();
+    for (size_t i = 0; i < _pairs.size(); i++)
+        _maxVec.push_back(_pairs[i].second);
+    
     _startVec = clock();
+    std::sort(_maxVec.begin(), _maxVec.end());
 
     std::vector<size_t> jacobIndices;
     if (_minVec.size() > 0) jacobIndices.push_back(0);
@@ -200,7 +191,21 @@ void PmergeMe::sortMaxVec()
 
 void PmergeMe::sortMaxDeq()
 {
+    for (size_t i = 0; i < _pairs.size(); ++i)
+    {
+        if (_pairs[i].first > _pairs[i].second)
+        {
+            int tmp = _pairs[i].first;
+            _pairs[i].first = _pairs[i].second;
+            _pairs[i].second = tmp;
+        }
+    }
+    _maxDeq.clear();
+    for (size_t i = 0; i < _pairs.size(); i++)
+        _maxDeq.push_back(_pairs[i].second);
+    
     _startDeq = clock();
+    std::sort(_maxDeq.begin(), _maxDeq.end());
 
     std::deque<size_t> jacobIndices;
     if (_minDeq.size() > 0) jacobIndices.push_back(0);
