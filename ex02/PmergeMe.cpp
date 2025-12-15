@@ -19,7 +19,10 @@
 #include <stdexcept>
 #include <set>
 
-PmergeMe::PmergeMe() : _last(0), _oddList(false), _startVec(0), _startDeq(0), _endVec(0), _endDeq(0), _timeVec(0), _timeDeq(0)
+// PmergeMe::PmergeMe() : _last(0), _oddList(false), _startVec(0), _startDeq(0), _endVec(0), _endDeq(0), _timeVec(0), _timeDeq(0)
+// {}
+
+PmergeMe::PmergeMe() : _startVec(0), _startDeq(0), _endVec(0), _endDeq(0), _timeVec(0), _timeDeq(0)
 {}
 
 PmergeMe::PmergeMe(const PmergeMe& copy)
@@ -33,13 +36,13 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& other)
     {
         _vec = other._vec;
         _deq = other._deq;
-        _pairs = other._pairs;
-        _last = other._last;
-        _oddList = other._oddList;
-        _minVec = other._minVec;
-        _maxVec = other._maxVec;
-        _minDeq = other._minDeq;
-        _maxDeq = other._maxDeq;
+        // _pairs = other._pairs;
+        // _last = other._last;
+        // _oddList = other._oddList;
+        // _minVec = other._minVec;
+        // _maxVec = other._maxVec;
+        // _minDeq = other._minDeq;
+        // _maxDeq = other._maxDeq;
         _startVec = other._startVec;
         _startDeq = other._startDeq;
         _endVec = other._endVec;
@@ -52,6 +55,10 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& other)
 
 PmergeMe::~PmergeMe()
 {}
+
+
+
+
 
 static bool isValidNumber(const std::string &str)
 {
@@ -99,157 +106,158 @@ void PmergeMe::parseAndPush(int argc, char **argv)
     }
 }
 
-void PmergeMe::makePairs()
-{
-    for (size_t i = 0; i < _vec.size(); i += 2)
-    {
-        if (i + 1 < _vec.size())
-        {
-            int a = _vec[i];
-            int b = _vec[i + 1];
-            if (a > b)
-            {
-                int tmp = a;
-                a = b;
-                b = tmp;
-            }
-            _pairs.push_back(std::make_pair(a, b));
-        }
-        else
-        {
-            _last = _vec[i];
-            _oddList = true;
-        }
-    }
-}
+// void PmergeMe::makePairs()
+// {
+//     for (size_t i = 0; i < _vec.size(); i += 2)
+//     {
+//         if (i + 1 < _vec.size())
+//         {
+//             int a = _vec[i];
+//             int b = _vec[i + 1];
+//             if (a > b)
+//             {
+//                 int tmp = a;
+//                 a = b;
+//                 b = tmp;
+//             }
+//             _pairs.push_back(std::make_pair(a, b));
+//         }
+//         else
+//         {
+//             _last = _vec[i];
+//             _oddList = true;
+//         }
+//     }
+// }
 
-void PmergeMe::extractMinsMaxs()
-{
-    for (size_t i = 0; i < _pairs.size(); i++)
-    {
-        _minVec.push_back(_pairs[i].first);
-        _maxVec.push_back(_pairs[i].second);
+// void PmergeMe::extractMinsMaxs()
+// {
+//     for (size_t i = 0; i < _pairs.size(); i++)
+//     {
+//         _minVec.push_back(_pairs[i].first);
+//         _maxVec.push_back(_pairs[i].second);
 
-        _minDeq.push_back(_pairs[i].first);
-        _maxDeq.push_back(_pairs[i].second);
-    }
-    if (_oddList)
-    {
-        _minVec.push_back(_last);
-        _minDeq.push_back(_last);
-    }
-}
+//         _minDeq.push_back(_pairs[i].first);
+//         _maxDeq.push_back(_pairs[i].second);
+//     }
+//     if (_oddList)
+//     {
+//         _minVec.push_back(_last);
+//         _minDeq.push_back(_last);
+//     }
+// }
 
-void PmergeMe::sortMaxVec()
-{
-    _maxVec.clear();
-    for (size_t i = 0; i < _pairs.size(); i++)
-        _maxVec.push_back(_pairs[i].second);
+// void PmergeMe::sortMaxVec()
+// {
+//     _maxVec.clear();
+//     for (size_t i = 0; i < _pairs.size(); i++)
+//         _maxVec.push_back(_pairs[i].second);
     
-    _startVec = clock();
-    std::sort(_maxVec.begin(), _maxVec.end()); // doit etre trier avec fordjohnson et pas sort
+//     _startVec = clock();
+//     std::sort(_maxVec.begin(), _maxVec.end()); // doit etre trier avec fordjohnson et pas sort
 
-    std::vector<size_t> jacobIndices;
-    if (_minVec.size() > 0) jacobIndices.push_back(0);
-    if (_minVec.size() > 1) jacobIndices.push_back(1);
+//     std::vector<size_t> jacobIndices;
+//     if (_minVec.size() > 0) jacobIndices.push_back(0);
+//     if (_minVec.size() > 1) jacobIndices.push_back(1);
 
-    size_t i = 2;
-    while (i < _minVec.size())
-    {
-        size_t j = jacobIndices[i - 1] + 2 * jacobIndices[i - 2];
-        if (j >= _minVec.size())
-            break;
-        jacobIndices.push_back(j);
-        i++;
-    }
-    std::vector<bool> inserted(_minVec.size(), false);
-    for (size_t k = 0; k < jacobIndices.size(); ++k)
-    {
-        size_t idx = jacobIndices[k];
-        if (!inserted[idx]) 
-        {
-            int value = _minVec[idx];
-            std::vector<int>::iterator pos = std::lower_bound(_maxVec.begin(), _maxVec.end(), value);
-            _maxVec.insert(pos, value);
-            inserted[idx] = true;
-        }
-    }
-    for (size_t idx = 0; idx < _minVec.size(); ++idx)
-    {
-        if (!inserted[idx])
-        {
-            int value = _minVec[idx];
-            std::vector<int>::iterator pos = std::lower_bound(_maxVec.begin(), _maxVec.end(), value);
-            _maxVec.insert(pos, value);
-            inserted[idx] = true;
-        }
-    }
-    _endVec = clock();
-    _timeVec = 1000000.0 * (_endVec - _startVec) / CLOCKS_PER_SEC;
-}
+//     size_t i = 2;
+//     while (i < _minVec.size())
+//     {
+//         size_t j = jacobIndices[i - 1] + 2 * jacobIndices[i - 2];
+//         if (j >= _minVec.size())
+//             break;
+//         jacobIndices.push_back(j);
+//         i++;
+//     }
+//     std::vector<bool> inserted(_minVec.size(), false);
+//     for (size_t k = 0; k < jacobIndices.size(); ++k)
+//     {
+//         size_t idx = jacobIndices[k];
+//         if (!inserted[idx]) 
+//         {
+//             int value = _minVec[idx];
+//             std::vector<int>::iterator pos = std::lower_bound(_maxVec.begin(), _maxVec.end(), value);
+//             _maxVec.insert(pos, value);
+//             inserted[idx] = true;
+//         }
+//     }
+//     for (size_t idx = 0; idx < _minVec.size(); ++idx)
+//     {
+//         if (!inserted[idx])
+//         {
+//             int value = _minVec[idx];
+//             std::vector<int>::iterator pos = std::lower_bound(_maxVec.begin(), _maxVec.end(), value);
+//             _maxVec.insert(pos, value);
+//             inserted[idx] = true;
+//         }
+//     }
+//     _endVec = clock();
+//     _timeVec = 1000000.0 * (_endVec - _startVec) / CLOCKS_PER_SEC;
+// }
 
-void PmergeMe::sortMaxDeq()
-{
-    _maxDeq.clear();
-    for (size_t i = 0; i < _pairs.size(); i++)
-        _maxDeq.push_back(_pairs[i].second);
+// void PmergeMe::sortMaxDeq()
+// {
+//     _maxDeq.clear();
+//     for (size_t i = 0; i < _pairs.size(); i++)
+//         _maxDeq.push_back(_pairs[i].second);
     
-    _startDeq = clock();
-    std::sort(_maxDeq.begin(), _maxDeq.end());
+//     _startDeq = clock();
+//     std::sort(_maxDeq.begin(), _maxDeq.end());
 
-    std::deque<size_t> jacobIndices;
-    if (_minDeq.size() > 0) jacobIndices.push_back(0);
-    if (_minDeq.size() > 1) jacobIndices.push_back(1);
+//     std::deque<size_t> jacobIndices;
+//     if (_minDeq.size() > 0) jacobIndices.push_back(0);
+//     if (_minDeq.size() > 1) jacobIndices.push_back(1);
 
-    size_t i = 2;
-    while (i < _minDeq.size())
-    {
-        size_t j = jacobIndices[i - 1] + 2 * jacobIndices[i - 2];
-        if (j >= _minDeq.size())
-            break;
-        jacobIndices.push_back(j);
-        i++;
-    }
+//     size_t i = 2;
+//     while (i < _minDeq.size())
+//     {
+//         size_t j = jacobIndices[i - 1] + 2 * jacobIndices[i - 2];
+//         if (j >= _minDeq.size())
+//             break;
+//         jacobIndices.push_back(j);
+//         i++;
+//     }
     
-    std::vector<bool> inserted(_minDeq.size(), false);
-    for (size_t k = 0; k < jacobIndices.size(); ++k)
-    {
-        size_t idx = jacobIndices[k];
-        if (!inserted[idx]) 
-        {
-            int value = _minDeq[idx];
-            std::deque<int>::iterator pos = std::lower_bound(_maxDeq.begin(), _maxDeq.end(), value);
-            _maxDeq.insert(pos, value);
-            inserted[idx] = true;
-        }
-    }
-    for (size_t idx = 0; idx < _minDeq.size(); ++idx)
-    {
-        if (!inserted[idx])
-        {
-            int value = _minDeq[idx];
-            std::deque<int>::iterator pos = std::lower_bound(_maxDeq.begin(), _maxDeq.end(), value);
-            _maxDeq.insert(pos, value);
-            inserted[idx] = true;
-        }
-    }
-    _endDeq = clock();
-    _timeDeq = 1000000.0 * (_endDeq - _startDeq) / CLOCKS_PER_SEC;
-}
+//     std::vector<bool> inserted(_minDeq.size(), false);
+//     for (size_t k = 0; k < jacobIndices.size(); ++k)
+//     {
+//         size_t idx = jacobIndices[k];
+//         if (!inserted[idx]) 
+//         {
+//             int value = _minDeq[idx];
+//             std::deque<int>::iterator pos = std::lower_bound(_maxDeq.begin(), _maxDeq.end(), value);
+//             _maxDeq.insert(pos, value);
+//             inserted[idx] = true;
+//         }
+//     }
+//     for (size_t idx = 0; idx < _minDeq.size(); ++idx)
+//     {
+//         if (!inserted[idx])
+//         {
+//             int value = _minDeq[idx];
+//             std::deque<int>::iterator pos = std::lower_bound(_maxDeq.begin(), _maxDeq.end(), value);
+//             _maxDeq.insert(pos, value);
+//             inserted[idx] = true;
+//         }
+//     }
+//     _endDeq = clock();
+//     _timeDeq = 1000000.0 * (_endDeq - _startDeq) / CLOCKS_PER_SEC;
+// }
 
 void PmergeMe::printAfterSort() const
 {
     std::cout << std::endl;
     std::cout << "vector AFTER : ";
-    for (std::vector<int>::const_iterator it = _maxVec.begin(); it != _maxVec.end(); ++it)
+    for (std::vector<int>::const_iterator it = _vec.begin(); it != _vec.end(); ++it)
         std::cout << *it << " ";
     std::cout << std::endl;
 
     std::cout << "deque AFTER : ";
-    for (std::deque<int>::const_iterator it = _maxDeq.begin(); it != _maxDeq.end(); ++it)
+    for (std::deque<int>::const_iterator it = _deq.begin(); it != _deq.end(); ++it)
         std::cout << *it << " ";
     std::cout << std::endl;
 }
+
 
 void PmergeMe::displayTime() const
 {
@@ -259,4 +267,228 @@ void PmergeMe::displayTime() const
 
     std::cout << "Time to process a range of " << _deq.size()
               << " elements with std::deque : " << _timeDeq << " us" << std::endl;
+}
+
+
+std::vector<int> PmergeMe::fordJohnsonVec(const std::vector<int>& input)
+{
+    // ===== 1) CAS DE BASE (obligatoire pour la récursion) =====
+    if (input.size() <= 1)
+        return input;
+
+    // ===== 2) CREATION DES PAIRES =====
+    std::vector<int> mins;
+    std::vector<int> maxs;
+    bool oddList = false;
+    int oddValue = 0;
+
+    for (size_t i = 0; i + 1 < input.size(); i += 2)
+    {
+        int a = input[i];
+        int b = input[i + 1];
+
+        if (a < b)
+        {
+            mins.push_back(a);
+            maxs.push_back(b);
+        }
+        else
+        {
+            mins.push_back(b);
+            maxs.push_back(a);
+        }
+    }
+
+    // Cas impair
+    if (input.size() % 2 != 0)
+    {
+        oddList = true;
+        oddValue = input.back();
+    }
+
+    // ===== 3) TRI RECURSIF DES MAX (COEUR DU FORD-JOHNSON) =====
+    maxs = fordJohnsonVec(maxs);
+
+    // ===== 4) GENERATION DE LA SUITE DE JACOBSTHAL =====
+    std::vector<size_t> jacob;
+    jacob.push_back(0);
+    if (mins.size() > 1)
+        jacob.push_back(1);
+
+
+    size_t i = 2; //  modif
+    while (i < mins.size())
+    {
+        size_t j = jacob[i - 1] + 2 * jacob[i - 2];
+        if (j >= mins.size())
+            break;
+        jacob.push_back(j);
+        i++;
+    }
+
+    // while (true)
+    // {
+    //     size_t next = jacob[jacob.size() - 1]
+    //                 + 2 * jacob[jacob.size() - 2];
+    //     if (next >= mins.size())
+    //         break;
+    //     jacob.push_back(next);
+    // }
+
+    // ===== 5) INSERTION DES MINS SELON JACOBSTHAL =====
+    std::vector<bool> inserted(mins.size(), false);
+
+    for (size_t i = 0; i < jacob.size(); ++i)
+    {
+        size_t idx = jacob[i];
+        if (!inserted[idx])
+        {
+            int value = mins[idx];
+
+            std::vector<int>::iterator pos = std::lower_bound(maxs.begin(), maxs.end(), value);
+
+            maxs.insert(pos, value);
+            inserted[idx] = true;
+        }
+    }
+
+    // ===== 6) INSERTION DES MINS RESTANTS =====
+    for (size_t i = 0; i < mins.size(); ++i)
+    {
+        if (!inserted[i])
+        {
+            int value = mins[i];
+            std::vector<int>::iterator pos = std::lower_bound(maxs.begin(), maxs.end(), value);
+            maxs.insert(pos, value);
+        }
+    }
+
+    // ===== 7) INSERTION DU DERNIER ELEMENT (SI IMPAIR) =====
+    if (oddList)
+    {
+        std::vector<int>::iterator pos = std::lower_bound(maxs.begin(), maxs.end(), oddValue);
+        maxs.insert(pos, oddValue);
+    }
+
+    // ===== 8) RESULT FINAL =====
+    return maxs;
+}
+
+std::deque<int> PmergeMe::fordJohnsonDeq(const std::deque<int>& input)
+{
+    if (input.size() <= 1)
+        return input;
+
+    std::deque<int> mins;
+    std::deque<int> maxs;
+    bool oddList = false;
+    int oddValue = 0;
+
+    for (size_t i = 0; i + 1 < input.size(); i += 2)
+    {
+        int a = input[i];
+        int b = input[i + 1];
+
+        if (a < b)
+        {
+            mins.push_back(a);
+            maxs.push_back(b);
+        }
+        else
+        {
+            mins.push_back(b);
+            maxs.push_back(a);
+        }
+    }
+
+    if (input.size() % 2 != 0)
+    {
+        oddList = true;
+        oddValue = input.back();
+    }
+
+    // TRI RECURSIF DES MAX
+    maxs = fordJohnsonDeq(maxs);
+
+    // SUITE DE JACOBSTHAL
+    std::deque<size_t> jacob;
+    jacob.push_back(0);
+    if (mins.size() > 1)
+        jacob.push_back(1);
+
+
+
+    size_t i = 2;
+    while (i < mins.size())
+    {
+        size_t j = jacob[i - 1] + 2 * jacob[i - 2];
+        if (j >= mins.size())
+            break;
+        jacob.push_back(j);
+        i++;
+    }
+
+
+    // while (true)
+    // {
+    //     size_t next = jacob[jacob.size() - 1]
+    //                 + 2 * jacob[jacob.size() - 2];
+    //     if (next >= mins.size())
+    //         break;
+    //     jacob.push_back(next);
+    // }
+
+    // INSERTION DES MINS
+    std::vector<bool> inserted(mins.size(), false);
+
+    for (size_t i = 0; i < jacob.size(); ++i)
+    {
+        size_t idx = jacob[i];
+        if (!inserted[idx])
+        {
+            int value = mins[idx];
+
+            std::deque<int>::iterator pos = std::lower_bound(maxs.begin(), maxs.end(), value);
+            maxs.insert(pos, value);
+            inserted[idx] = true;
+        }
+    }
+
+    // INSERTION DES RESTANTS
+    for (size_t i = 0; i < mins.size(); ++i)
+    {
+        if (!inserted[i])
+        {
+            int value = mins[i];
+            std::deque<int>::iterator pos =
+                std::lower_bound(maxs.begin(), maxs.end(), value);
+            maxs.insert(pos, value);
+        }
+    }
+
+    // CAS IMPAIR
+    if (oddList)
+    {
+        std::deque<int>::iterator pos = std::lower_bound(maxs.begin(), maxs.end(), oddValue);
+        maxs.insert(pos, oddValue);
+    }
+
+    return maxs;
+}
+
+
+void PmergeMe::sortMaxVec()
+{
+    _startVec = clock();
+    _vec = fordJohnsonVec(_vec);
+    _endVec = clock();
+    _timeVec = 1000000.0 * (_endVec - _startVec) / CLOCKS_PER_SEC;
+}
+
+void PmergeMe::sortMaxDeq()
+{
+    _startDeq = clock();
+    _deq = fordJohnsonDeq(_deq);
+    _endDeq = clock();
+    _timeDeq = 1000000.0 * (_endDeq - _startDeq) / CLOCKS_PER_SEC;
 }
