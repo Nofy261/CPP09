@@ -6,7 +6,7 @@
 /*   By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/03 14:18:50 by nolecler          #+#    #+#             */
-/*   Updated: 2025/12/11 15:38:06 by nolecler         ###   ########.fr       */
+/*   Updated: 2025/12/16 09:30:50 by nolecler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include <vector>
 #include <deque>
 #include <ctime>
-#include <utility>
 
 class PmergeMe
 {
@@ -26,8 +25,6 @@ class PmergeMe
 
         void parseAndPush(int argc, char **argv);
         void printBeforeSort() const;
-        // void makePairs();
-        // void extractMinsMaxs();
         void sortMaxVec();
         void sortMaxDeq();
         void printAfterSort() const;
@@ -36,14 +33,6 @@ class PmergeMe
     private :
         std::vector<int> _vec;
         std::deque<int> _deq;
-        // std::vector<std::pair<int,int> > _pairs;
-        // int _last;
-        // bool _oddList; 
-
-        // std::vector<int> _minVec;
-        // std::vector<int> _maxVec;
-        // std::deque<int> _minDeq;
-        // std::deque<int> _maxDeq;
 
         clock_t _startVec;
         clock_t _startDeq;
