@@ -6,7 +6,7 @@
 /*   By: nolecler <nolecler@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/03 14:18:43 by nolecler          #+#    #+#             */
-/*   Updated: 2025/12/16 10:51:18 by nolecler         ###   ########.fr       */
+/*   Updated: 2025/12/16 17:25:52 by nolecler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <cctype>
 #include <stdexcept>
 #include <sstream> 
+#include <utility>
 
 PmergeMe::PmergeMe() : _startVec(0), _startDeq(0), _endVec(0), _endDeq(0), _timeVec(0), _timeDeq(0)
 {}
@@ -108,36 +109,6 @@ void PmergeMe::parseAndPush(int argc, char **argv)
         throw std::runtime_error("Error");
 }
 
-// void PmergeMe::buildOrder(std::vector<int>& jacob, std::vector<int>& order, int n)
-// {
-//     std::vector<bool> used(n, false);
-//     order.push_back(0);
-//     used[0] = true;
- 
-//     for (size_t i = 0; i < jacob.size(); ++i)
-//     {
-//         int j = jacob[i];
-//         if (j - 1 < n && !used[j - 1])
-//         {                 
-//             order.push_back(j - 1);
-//             used[j - 1] = true;
-//         }
-        
-//         if (i > 0)
-//         {
-//             int prev = jacob[i - 1];
-//             for (int k = j - 2; k >= prev; --k)
-//             {
-//                 if (k < n && !used[k])
-//                 {
-//                     order.push_back(k);
-//                     used[k] = true;
-//                 }
-//             }
-//         }
-//     }
-// }
-
 
 void PmergeMe::printAfterSort() const
 {
@@ -165,164 +136,226 @@ void PmergeMe::displayTime() const
 }
 
 
-// generer la suite jacostahl
-// creer une fonction qui donne l ordre d insertion
+static std::vector<size_t> buildJacobInsertionOrderV(size_t n)
+{
+    std::vector<size_t> order;
+    if (n == 0)
+        return order;
+
+    std::vector<size_t> jacob;
+    jacob.push_back(0);
+    if (n > 1)
+        jacob.push_back(1);
+
+    size_t i = 2;
+    while (i < n)
+    {
+        size_t next = jacob[i - 1] + 2 * jacob[i - 2];
+        if (next >= n)
+            break;
+        jacob.push_back(next);
+        ++i;
+    }
+
+    for (size_t k = 0; k < jacob.size(); ++k)
+        order.push_back(jacob[k]);
+
+    // Compléter avec les indices restants non utilisés
+    for (size_t idx = 0; idx < n; ++idx)
+    {
+        bool found = false;
+        for (size_t j = 0; j < order.size(); ++j)
+        {
+            if (order[j] == idx)
+            { 
+                found = true;
+                    break;
+            }    
+        }
+        if (!found)
+            order.push_back(idx);
+    }
+    return order;
+}
 
 
+static std::deque<size_t> buildJacobInsertionOrderD(size_t n)
+{
+    std::deque<size_t> order;
+    if (n == 0)
+        return order;
+
+    std::deque<size_t> jacob;
+    jacob.push_back(0);
+    if (n > 1)
+        jacob.push_back(1);
+
+    size_t i = 2;
+    while (i < n)
+    {
+        size_t next = jacob[i - 1] + 2 * jacob[i - 2];
+        if (next >= n)
+            break;
+        jacob.push_back(next);
+        ++i;
+    }
+
+    for (size_t k = 0; k < jacob.size(); ++k)
+        order.push_back(jacob[k]);
+
+    // Compléter avec les indices restants non utilisés
+    for (size_t idx = 0; idx < n; ++idx)
+    {
+        bool found = false;
+        for (size_t j = 0; j < order.size(); ++j)
+        {
+            if (order[j] == idx)
+            { 
+                found = true;
+                    break;
+            }    
+        }
+        if (!found)
+            order.push_back(idx);
+    }
+
+    return order;
+}
+
+
+// Fonction pour insérer un minValue avant son maxBound
+static void insertOneVec(std::vector<int>& maxs, int minValue, int maxBound)
+{
+
+    if (std::find(maxs.begin(), maxs.end(), minValue) != maxs.end())
+        return;
+    
+    std::vector<int>::iterator bound = std::lower_bound(maxs.begin(), maxs.end(), maxBound);
+    std::vector<int>::iterator pos = std::lower_bound(maxs.begin(), bound, minValue);
+    maxs.insert(pos, minValue);
+}
+
+static void insertOneDeq(std::deque<int>& maxs, int minValue, int maxBound)
+{
+    if (std::find(maxs.begin(), maxs.end(), minValue) != maxs.end())
+        return;
+    
+    std::deque<int>::iterator bound = std::lower_bound(maxs.begin(), maxs.end(), maxBound);
+    std::deque<int>::iterator pos = std::lower_bound(maxs.begin(), bound, minValue);
+    maxs.insert(pos, minValue);
+}
+
+
+// Fonction qui insère tous les mins dans l'ordre Jacobsthal
+static void insertMinsWithJacobOrderV(std::vector<int>& maxs, const std::vector< std::pair<int,int> >& pairs)
+{
+    std::vector<size_t> jacobOrder = buildJacobInsertionOrderV(pairs.size());
+    for (size_t i = 0; i < jacobOrder.size(); ++i)
+    {
+        size_t idx = jacobOrder[i];
+        insertOneVec(maxs, pairs[idx].first, pairs[idx].second);
+    }
+}
+
+static void insertMinsWithJacobOrderD(std::deque<int>& maxs, const std::deque< std::pair<int,int> >& pairs)
+{
+    std::deque<size_t> jacobOrder = buildJacobInsertionOrderD(pairs.size());
+    for (size_t i = 0; i < jacobOrder.size(); ++i)
+    {
+        size_t idx = jacobOrder[i];
+        insertOneDeq(maxs, pairs[idx].first, pairs[idx].second);
+    }
+}
+
+// Ford-Johnson sur un vecteur
 std::vector<int> PmergeMe::fordJohnsonVec(const std::vector<int>& input)
 {
     if (input.size() <= 1)
         return input;
 
-    std::vector<int> mins;
+    std::vector< std::pair<int,int> > pairs;
     std::vector<int> maxs;
     bool oddList = false;
     int oddValue = 0;
 
-    for (size_t i = 0; i + 1 < input.size(); i += 2)
+    // Créer les paires (min,max)
+    size_t i;
+    for (i = 0; i + 1 < input.size(); i += 2)
     {
         int a = input[i];
         int b = input[i + 1];
-
         if (a < b)
-        {
-            mins.push_back(a);
-            maxs.push_back(b);
-        }
+            pairs.push_back(std::make_pair(a,b));
         else
-        {
-            mins.push_back(b);
-            maxs.push_back(a);
-        }
+            pairs.push_back(std::make_pair(b,a));
+        maxs.push_back(pairs.back().second); // max pour tri récursif
     }
+
     if (input.size() % 2 != 0)
     {
         oddList = true;
         oddValue = input.back();
     }
-    
+
+    // Trier les maxs récursivement
     maxs = fordJohnsonVec(maxs);
 
-    std::vector<size_t> jacob;
-    jacob.push_back(0);
-    if (mins.size() > 1)
-        jacob.push_back(1);
+    // Insérer les mins selon l'ordre de Jacobsthal
+    insertMinsWithJacobOrderV(maxs, pairs);
 
-    size_t i = 2;
-    while (i < mins.size())
-    {
-        size_t j = jacob[i - 1] + 2 * jacob[i - 2];
-        if (j >= mins.size())
-            break;
-        jacob.push_back(j);
-        i++;
-    }
-
-    std::vector<bool> inserted(mins.size(), false);
-    for (size_t i = 0; i < jacob.size(); ++i)
-    {
-        size_t idx = jacob[i];
-        if (!inserted[idx])
-        {
-            int value = mins[idx];
-            std::vector<int>::iterator pos = std::lower_bound(maxs.begin(), maxs.end(), value);
-            maxs.insert(pos, value);
-            inserted[idx] = true;
-        }
-    }
-    for (size_t i = 0; i < mins.size(); ++i)
-    {
-        if (!inserted[i])
-        {
-            int value = mins[i];
-            std::vector<int>::iterator pos = std::lower_bound(maxs.begin(), maxs.end(), value);
-            maxs.insert(pos, value);
-        }
-    }
+    // Insérer le dernier élément impair s'il existe
     if (oddList)
     {
         std::vector<int>::iterator pos = std::lower_bound(maxs.begin(), maxs.end(), oddValue);
         maxs.insert(pos, oddValue);
     }
+
     return maxs;
 }
+
 
 std::deque<int> PmergeMe::fordJohnsonDeq(const std::deque<int>& input)
 {
     if (input.size() <= 1)
         return input;
 
-    std::deque<int> mins;
+    std::deque< std::pair<int,int> > pairs;
     std::deque<int> maxs;
     bool oddList = false;
     int oddValue = 0;
 
-    for (size_t i = 0; i + 1 < input.size(); i += 2)
+    size_t i;
+    for (i = 0; i + 1 < input.size(); i += 2)
     {
         int a = input[i];
         int b = input[i + 1];
-
         if (a < b)
-        {
-            mins.push_back(a);
-            maxs.push_back(b);
-        }
+            pairs.push_back(std::make_pair(a,b));
         else
-        {
-            mins.push_back(b);
-            maxs.push_back(a);
-        }
+            pairs.push_back(std::make_pair(b,a));
+        maxs.push_back(pairs.back().second);
     }
+
     if (input.size() % 2 != 0)
     {
         oddList = true;
         oddValue = input.back();
     }
+
+    // Trier les maxs récursivement
     maxs = fordJohnsonDeq(maxs);
 
-    std::deque<size_t> jacob;
-    jacob.push_back(0);
-    if (mins.size() > 1)
-        jacob.push_back(1);
+    // Insérer les mins selon Jacobsthal
+    insertMinsWithJacobOrderD(maxs, pairs);
 
-    size_t i = 2;
-    while (i < mins.size())
-    {
-        size_t j = jacob[i - 1] + 2 * jacob[i - 2];
-        if (j >= mins.size())
-            break;
-        jacob.push_back(j);
-        i++;
-    }
-
-    std::vector<bool> inserted(mins.size(), false);
-
-    for (size_t i = 0; i < jacob.size(); ++i)
-    {
-        size_t idx = jacob[i];
-        if (!inserted[idx])
-        {
-            int value = mins[idx];
-            std::deque<int>::iterator pos = std::lower_bound(maxs.begin(), maxs.end(), value);
-            maxs.insert(pos, value);
-            inserted[idx] = true;
-        }
-    }
-    for (size_t i = 0; i < mins.size(); ++i)
-    {
-        if (!inserted[i])
-        {
-            int value = mins[i];
-            std::deque<int>::iterator pos =
-                std::lower_bound(maxs.begin(), maxs.end(), value);
-            maxs.insert(pos, value);
-        }
-    }
+    // Insérer l’élément impair
+    std::deque<int>::iterator pos;
     if (oddList)
     {
-        std::deque<int>::iterator pos = std::lower_bound(maxs.begin(), maxs.end(), oddValue);
+        pos = std::lower_bound(maxs.begin(), maxs.end(), oddValue);
         maxs.insert(pos, oddValue);
     }
+
     return maxs;
 }
 
